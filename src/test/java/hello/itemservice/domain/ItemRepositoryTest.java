@@ -1,5 +1,6 @@
 package hello.itemservice.domain;
 
+import com.sun.xml.bind.v2.TODO;
 import hello.itemservice.repository.ItemRepository;
 import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
@@ -16,6 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class ItemRepositoryTest {
 
+    /* MemoryItemRepository 구현체가 아닌 ItemRepository 인터페이스를 테스트 하는 이유
+    *  인터페이스를 대상으로 테스트하면 향후 다른 구현체로 변경되었을 때 테스트 코드 수정 없이 해당 구현체가 잘 동작하는지 검증이 가능하다.
+    *  */
     @Autowired
     ItemRepository itemRepository;
 

@@ -1,6 +1,5 @@
 package hello.itemservice.domain;
 
-import com.sun.xml.bind.v2.TODO;
 import hello.itemservice.repository.ItemRepository;
 import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;

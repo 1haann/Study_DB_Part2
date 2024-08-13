@@ -16,6 +16,8 @@ public class TestDataInit {
     /**
      * 확인용 초기 데이터 추가
      */
+    // NOTE : @EventListner 어노테이션은 스프링 컨테이너에 등록된 Bean에서만 작동을 합니다.
+
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         log.info("test data init");

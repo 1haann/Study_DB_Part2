@@ -80,6 +80,9 @@ public class JdbcTemplateItemRepositoryV1 implements ItemRepository {
 
         String sql = "select id, item_name, price, quantity, from item";
         //동적 쿼리
+        // NOTE : JdbcTemplate의 단점
+        //  아래의 코드처럼 조건에 따라 where 또는 and를 넣는 등 경우의 수를 모두 계산하여 작성해야 하므로 복잡하며
+        //  각 상황에 맞게 파라미터도 생성해야 하는 단점이 있다. 이후에 배울 MyBatis의 장점은 이런 동적 쿼리를 쉽게 작성할 수 있다는 것이다.
         if (StringUtils.hasText(itemName) || maxPrice != null) {
             sql += " where";
         }

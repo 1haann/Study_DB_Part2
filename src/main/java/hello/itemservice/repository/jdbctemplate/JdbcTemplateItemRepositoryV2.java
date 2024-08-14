@@ -23,10 +23,17 @@ import java.util.Optional;
 
 /**
  * NamedParameterJdbcTemplate
- * SqlParameterSource
- *  - BeanPropertySqlParameterSource
- *  - MapSqlParameterSource
- * Map
+ * NOTE : 이름 지정 바인딩에서 자주 사용하는 3가지의 파라미터 종류
+ *  - Map
+ *  - SqlParameterSource
+ *      -- BeanPropertySqlParameterSource
+ *          자동으로 파라미터 객체를 생성한다.
+ *          ex) getItemName()이 있다면 자동으로 key = itemName, value = 상품명 데이터를 만들어낸다.
+ *          update() 메소드처럼 클래스 외부에 존재하는 "id"값을 포함하여 바인딩 하려면 Map 또는 MapSqlParameterSource를 사용해야 한다.
+ *      -- MapSqlParameterSource
+ *          Map과 유사하며 SQL 타입을 지정할 수 있는 등 SQL에 특화된 기능을 제공한다.
+ *  파라미터를 전달하려면 Map처럼 key, value 데이터 구조를 만들어서 전달한다.
+ *  key는 ":파라미터이름"으로 지정한 파라미터 이름이며 value는 해당 파라미터의 값이 된다.
  * BeanPropertyRowMapper
  */
 @Slf4j
@@ -61,7 +68,8 @@ public class JdbcTemplateItemRepositoryV2 implements ItemRepository {
         String sql = "update item " +
                 "set item_name=:itemName, price=:price, quantity=:quantity, " +
                 "where id=:id";
-
+        // NOTE param에 "itemName"라는 Key와 "updateParam.getItemName()"이라는 Value가 있다.
+        //  sql문의 ":itemName"의 값으로 param의 "itemName"이라는 Key를 가진 "updateParam.getItemName()" 값이 들어간다.
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("itemName", updateParam.getItemName())
                 .addValue("price", updateParam.getPrice())
@@ -118,6 +126,13 @@ public class JdbcTemplateItemRepositoryV2 implements ItemRepository {
 
     // NOTE : RowMapper는 데이터베이스의 반환 결과인 ResultSet을 객체로 변환합니다.
     private RowMapper<Item> itemRowMapper() {
+        // NOTE : 자바 객체는 camelCase 표기법을 사용하며 관계형 데이터베이스는 snake_case 표기법을 사용한다.
+        //  BeanPropertyRowMapper는 ResultSet의 결과를 받고 자바빈 규약에 맞춰 데이터를 변환한다.
+        //  ex) select id로 로 조회 시, Item 인스턴스 생성 후 setId(rs.getLong("id"));와 같은 코드를 작성해준다.
+        //  BeanPropertyRowMapper는 언더스코어 표기법을 camel로 자동 변환해준다.
+        //  즉 select item_name로 조회 시, setitem_name()이 아닌 setItemName()으로 변환해서 작동한다.
+        //  ex) DB의 컬럼명(member_name)과 객체의 변수명(username)처럼 이름이 완전히 다르다면
+        //      sql문에 "as"로 별칭을 주어 해결한다. select member_name as username
         return BeanPropertyRowMapper.newInstance(Item.class);   //camel 변환 지원
     }
 

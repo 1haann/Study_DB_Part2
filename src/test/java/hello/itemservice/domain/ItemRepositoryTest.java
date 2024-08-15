@@ -63,6 +63,12 @@ class ItemRepositoryTest {
         assertThat(findItem.getQuantity()).isEqualTo(updateParam.getQuantity());
     }
 
+    // NOTE : 별도의 테스트용 데이터베이스를 생성하여 테스트를 진행해도 문제가 발생한다.
+    //  ex) findItems() 메소드를 여러번 실행하면 데이터가 계속 쌓이며 테스트에 영향을 준다.
+    //  테스트의 중요한 원칙
+    //      - 테스트는 다른 테스트와 격리해야 한다.
+    //      - 테스트는 반복해서 실행할 수 있어야 한다.
+    //  위의 문제를 해결하려면 각각의 테스트가 끝날 때 마다 해당 테스트에서 추가한 데이터를 삭제해야 한다.
     @Test
     void findItems() {
         //given

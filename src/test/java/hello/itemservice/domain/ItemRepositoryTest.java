@@ -5,13 +5,11 @@ import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +17,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // NOTE: @SpringBootTest는 상위 패키지로 올라가며 @SpringBootApplication을 찾아서 설정으로 사용한다.
 //  현재는 @Import(JdbcTemplateV3Config.class)로 JdbcTemplateV3 설정을 가지고 테스트를 진행한다.
+
+// NOTE: @Transactional 어노테이션은 로직이 성공적으로 수행되면 커밋하도록 동작한다.
+//  그러나 테스트에서 @Transactional을 사용하면 스프링은 테스트를 트랜잭션 안에서 실행하고 테스트가 끝나면 트랜잭션을 자동으로 롤백시킨다.
+//  클래스 또는 메소드에 붙여 사용한다.
+
+// NOTE: @Commit(강제로 커밋하기)
+//  @Transactional을 테스트에서 사용하면 테스트가 끝난 후 롤백되기 때문에 테스트 과정에서 저장한 모든 데이터가 사라진다.
+//  실제로 데이터베이스에 데이터가 잘 보관되었는지 확인해보고 싶다면 @Commit을 클래스 또는 메소드에 붙여 사용한다.
+//  @Commit을 붙이면 테스트 종료 후 롤백 대신 커밋이 호출된다. @Rollback(value = false)처럼 작성을 하는 방법도 있다.
+
+//@Commit
+@Transactional
 @SpringBootTest
 class ItemRepositoryTest {
 
@@ -28,14 +38,14 @@ class ItemRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
 
-    @Autowired
-    PlatformTransactionManager transactionManager;
-    TransactionStatus status;
-    @BeforeEach
-    void beforeEach() {
-        //트랜잭션 시작
-        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
-    }
+//    @Autowired
+//    PlatformTransactionManager transactionManager;
+//    TransactionStatus status;
+//    @BeforeEach
+//    void beforeEach() {
+//        //트랜잭션 시작
+//        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+//    }
 
     @AfterEach
     void afterEach() {
@@ -44,7 +54,7 @@ class ItemRepositoryTest {
             ((MemoryItemRepository) itemRepository).clearStore();
         }
         //트랜잭션 롤백
-        transactionManager.rollback(status);
+        //transactionManager.rollback(status);
     }
 
     @Test

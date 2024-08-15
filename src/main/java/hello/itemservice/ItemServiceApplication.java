@@ -43,16 +43,24 @@ public class ItemServiceApplication {
 		return new TestDataInit(itemRepository);
 	}
 
-	@Bean
-	@Profile("test")
-	public DataSource dataSource() {
-		log.info("메모리 데이터 베이스 초기화");
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.h2.Driver");
-		// NOTE : "jdbc:h2:mem:db" 처럼 작성 시 임베디드 모드(메모리 모드)로 동작하는 H2 데이터베이스를 사용 할 수 있다.
-		dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
-		dataSource.setUsername("sa");
-		dataSource.setPassword("");
-		return dataSource;
-	}
+	// NOTE : 아래의 임베디드 모드를 생성하는 코드를 주석처리하고 test 내의 application.properties의 데이터베이스에 대한 설정도 주석 처리하여
+	//		데이터베이스에 대한 별다른 정보가 없다면 스프링 부트는 임베디드 모드로 접근하는 DataSource를 만들어 제공한다.
+
+	// NOTE : 만약 아래처럼 임베디드 모드를 생성하고 접근하는 코드와 test 내의 application.properties에 서버 모드로 접근하는 코드가 있다면?
+	//			- 임베디드 모드로 실행될 지 아니면 서버 모드로 실행 될 지 확인해보니 임베디드 모드로 실행된다.
+	//			- 우선순위의 기준이 무엇인지는 아직 모르겠으나 아래의 dataSource() 메소드가 applications.properties보다 높은 것 같다.
+
+//	@Bean
+//	@Profile("test")
+//	public DataSource dataSource() {
+//		log.info("메모리 데이터 베이스 초기화");
+//		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//		dataSource.setDriverClassName("org.h2.Driver");
+//		// NOTE : "jdbc:h2:mem:db" 처럼 작성 시 임베디드 모드(메모리 모드)로 동작하는 H2 데이터베이스를 사용 할 수 있다.
+//		dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1");
+//		dataSource.setUsername("sa");
+//		dataSource.setPassword("");
+//		return dataSource;
+//	}
+
 }

@@ -5,9 +5,13 @@ import hello.itemservice.repository.ItemSearchCond;
 import hello.itemservice.repository.ItemUpdateDto;
 import hello.itemservice.repository.memory.MemoryItemRepository;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 
@@ -24,12 +28,23 @@ class ItemRepositoryTest {
     @Autowired
     ItemRepository itemRepository;
 
+    @Autowired
+    PlatformTransactionManager transactionManager;
+    TransactionStatus status;
+    @BeforeEach
+    void beforeEach() {
+        //트랜잭션 시작
+        status = transactionManager.getTransaction(new DefaultTransactionDefinition());
+    }
+
     @AfterEach
     void afterEach() {
         //MemoryItemRepository 의 경우 제한적으로 사용
         if (itemRepository instanceof MemoryItemRepository) {
             ((MemoryItemRepository) itemRepository).clearStore();
         }
+        //트랜잭션 롤백
+        transactionManager.rollback(status);
     }
 
     @Test
@@ -69,6 +84,9 @@ class ItemRepositoryTest {
     //      - 테스트는 다른 테스트와 격리해야 한다.
     //      - 테스트는 반복해서 실행할 수 있어야 한다.
     //  위의 문제를 해결하려면 각각의 테스트가 끝날 때 마다 해당 테스트에서 추가한 데이터를 삭제해야 한다.
+    //  각각의 테스트가 끝날 때 마다 데이터 롤백을 하여 추가했던 데이터를 삭제한다.
+    //      - 1.트랜잭션 시작 2.테스트 A 실행 3.트랜잭션 롤백
+    //      - 4.트랜잭션 시작 5.테스트 B 실행 6.트랜잭션 롤백
     @Test
     void findItems() {
         //given

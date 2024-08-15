@@ -13,6 +13,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// NOTE: @SpringBootTest는 상위 패키지로 올라가며 @SpringBootApplication을 찾아서 설정으로 사용한다.
+//  현재는 @Import(JdbcTemplateV3Config.class)로 JdbcTemplateV3 설정을 가지고 테스트를 진행한다.
 @SpringBootTest
 class ItemRepositoryTest {
 

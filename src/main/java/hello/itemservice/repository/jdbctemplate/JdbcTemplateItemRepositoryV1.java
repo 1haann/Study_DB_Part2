@@ -52,11 +52,11 @@ public class JdbcTemplateItemRepositoryV1 implements ItemRepository {
 
     @Override
     public void update(Long itemId, ItemUpdateDto updateParam) {
-        String sql = "update item set item_name?, price=?, quantity=?, where id=?";
+        String sql = "update item set item_name=?, price=?, quantity=? where id=?";
         template.update(sql,
                 updateParam.getItemName(),
-                updateParam.getQuantity(),
                 updateParam.getPrice(),
+                updateParam.getQuantity(),
                 itemId);
     }
 
@@ -78,7 +78,7 @@ public class JdbcTemplateItemRepositoryV1 implements ItemRepository {
         String itemName = cond.getItemName();
         Integer maxPrice = cond.getMaxPrice();
 
-        String sql = "select id, item_name, price, quantity, from item";
+        String sql = "select id, item_name, price, quantity from item";
         //동적 쿼리
         // NOTE : JdbcTemplate의 단점
         //  아래의 코드처럼 조건에 따라 where 또는 and를 넣는 등 경우의 수를 모두 계산하여 작성해야 하므로 복잡하며

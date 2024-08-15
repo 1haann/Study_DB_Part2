@@ -66,7 +66,7 @@ public class JdbcTemplateItemRepositoryV2 implements ItemRepository {
     @Override
     public void update(Long itemId, ItemUpdateDto updateParam) {
         String sql = "update item " +
-                "set item_name=:itemName, price=:price, quantity=:quantity, " +
+                "set item_name=:itemName, price=:price, quantity=:quantity " +
                 "where id=:id";
         // NOTE param에 "itemName"라는 Key와 "updateParam.getItemName()"이라는 Value가 있다.
         //  sql문의 ":itemName"의 값으로 param의 "itemName"이라는 Key를 가진 "updateParam.getItemName()" 값이 들어간다.
@@ -99,7 +99,7 @@ public class JdbcTemplateItemRepositoryV2 implements ItemRepository {
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(cond);
 
-        String sql = "select id, item_name, price, quantity, from item";
+        String sql = "select id, item_name, price, quantity from item";
         //동적 쿼리
         // NOTE : JdbcTemplate의 단점
         //  아래의 코드처럼 조건에 따라 where 또는 and를 넣는 등 경우의 수를 모두 계산하여 작성해야 하므로 복잡하며

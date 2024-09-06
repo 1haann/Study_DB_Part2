@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace = 패키지명 + 인터페이스명 -->
+<mapper namespace="hello.itemservice.repository.mybatis.ItemMapper">
+    <insert id="save" useGeneratedKeys="true" keyProperty="id">
+        insert into item (item_name, price, quantity)
+        values (#{itemName}, #{price}, #{quantity})
+        <!-- ItemMapper 인터페이스의 save 메소드가 매개변수로 Item을 받고 있다.
+             Item 객체의 itemName, price, quantity에 바인딩 되어 꺼내온다.
+         -->
+    </insert>
+
+    <update id="update">
+        update item
+        set item_name = #{updateParam.itemName},
+            price = #{updateParam.price}
+            quantity = #{updateParam.quantity}
+        where id = #{id}
+    </update>
+
+    <!-- 원래라면 resultType에 패키지명 + 클래스명까지 전부 붙여서 작성을 해야한다.
+         ex) resultType = "hello.itemservice.domain.Item"
+
+         보다 간단하게 작성하기 위해 properties에 "mybatis.type-aliases-package=hello.itemservice.domain"를 추가했었다.
+         이렇게 작성하면 resultType 작성 시 패키지명을 생략할 수 있다.
+         등록한 hello.itemservice.domain 패키지 하위에 존재하는 클래스들에 대해 패키지명을 생략하고 클래스 이름만으로 사용할 수 있다.
+    -->
+    <select id="findById" resultType="Item">
+        select id, item_name, price, quantity;
+        from item
+        where id = #{id}
+    </select>
+
+    <!-- <if>문이 모두 실패하면 where을 만들지 않는다.
+         <if>문이 성공ㄹ하면 and를 where로 변환하여 붙인다.
+    -->
+    <select id="findAll" resultType="Item">
+        select id, item_name, price, quantity;
+        from item
+        <where>
+            <if test="itemName != null and itemName != ' ">
+                and item_name like concat('%', #{itemName}, '%')
+            </if>
+            <if test="maxPrice != null">
+                and price $lt;= #{maxPrice}
+                <!-- xml에서 <, > 와 같은 특수문자를 사용할 수 없기에 <를 $lt로 작성하여 <=를 표현-->
+            </if>
+        </where>
+    </select>
+</mapper>
